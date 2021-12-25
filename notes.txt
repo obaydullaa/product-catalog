@@ -1,0 +1,37 @@
+projects Development primer
+
+1. Have clear ideas about your projects
+2. Get assets ready
+3. Follow the flow (reading story)
+   - putting input
+   - submit content
+   - adding item to the UI
+   - delete item
+   - remove item from the UI 
+   - putting input on search box
+   - show item based on search input 
+
+
+
+CRUD(heart of every application)
+=========================================
+C-CREATE (storing data to remote source)
+R-READ -  (data source - UI (visual))
+U-UPDATE -(modifying the existing info)
+D-DELETE - (removing info)
+
+
+
+
+
+
+
+
+ 
+
+
+//project problem
+//interactive online tool
+  //1.Github (link)
+  //2) clear definition fo problem
+  3) what you have done
