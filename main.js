@@ -1,3 +1,8 @@
+//Data storage
+//memory (temporary)
+//database
+// localStorage, sessionStorage
+
 ;(function () {
   const formElm = document.querySelector('form')
   const nameInputElm = document.querySelector('.product-name')
@@ -8,7 +13,7 @@
   //tracking item
   let products = []
 
-  function showAllItemToUI(items) {
+  function showAllItemsToUI(items) {
     listGroupElm.innerHTML = ''
     items.forEach((item) => {
       const listElm = `<li class="list-group-item item-${item.id} collection-item">
@@ -20,8 +25,12 @@
     })
   }
 
+  function updateAfterRemove(products, id) {
+    return products.filter((product) => product.id !== id)
+  }
+
   function removeItemFromDataStore(id) {
-    const productsAfterDelete = products.filter((product) => product.id !== id)
+    const productsAfterDelete = updateAfterRemove(products, id)
     products = productsAfterDelete
   }
 
@@ -54,7 +63,8 @@
     if (!name || name.length < 5) {
       isError = true
     }
-    if (!price || Number(price) <= 0) {
+
+    if (!price || isNaN(price) || Number(price) <= 0) {
       isError = true
     }
 
@@ -68,6 +78,30 @@
       nameInput,
       priceInput,
     }
+  }
+
+  function addItemToStorage(product) {
+    let products
+    if (localStorage.getItem('storeProducts')) {
+      products = JSON.parse(localStorage.getItem('storeProducts'))
+      products.push(product)
+      //update to localStorage
+      localStorage.setItem('storeProducts', JSON.stringify(products))
+    } else {
+      products = []
+      products.push(product)
+      //update to localStorage
+      localStorage.setItem('storeProducts', JSON.stringify(products))
+    }
+  }
+
+  function removeProductFromStorage(id) {
+    //pick from localStorage
+    const products = JSON.parse(localStorage.getItem('storeProducts'))
+    //filter
+    const productsAfterRemove = updateAfterRemove(products, id)
+    //save data to localStorage
+    localStorage.setItem('storeProducts', JSON.stringify(productsAfterRemove))
   }
 
   function init() {
@@ -84,17 +118,22 @@
         return
       }
 
-      //add item to data store
       //generate item
       const id = products.length
 
-      products.push({
+      const product = {
         id: id,
         name: nameInput,
         price: priceInput,
-      })
+      }
+
+      //add item to data store
+      products.push(product)
       //add item to the UI
       addItemToUI(id, nameInput, priceInput)
+
+      //add Item to localStorage
+      addItemToStorage(product)
       //reset the input
       resetInput()
     })
@@ -105,7 +144,7 @@
       const filteredArr = products.filter((product) =>
         product.name.includes(filterValue)
       )
-      showAllItemToUI(filteredArr)
+      showAllItemsToUI(filteredArr)
       //show Item to UI
     })
 
@@ -115,8 +154,18 @@
         const id = getItemID(evt.target)
         //delete item from UI
         removeItemFromUI(id)
+        //delete item from  data store
         removeItemFromDataStore(id)
-        //delete item
+        //delete item from storage
+        removeProductFromStorage(id)
+      }
+    })
+
+    document.addEventListener('DOMContentLoaded', (e) => {
+      //checking item into localStorage
+      if (localStorage.getItem('storeProducts')) {
+        const products = JSON.parse(localStorage.getItem('storeProducts'))
+        showAllItemsToUI(products)
       }
     })
   }
